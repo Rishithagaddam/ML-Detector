@@ -1,0 +1,13 @@
+train: flask-api/models/roboflow/fall-detection/train/images
+val: flask-api/models/roboflow/fall-detection/valid/images
+test: flask-api/models/roboflow/fall-detection/test/images
+
+nc: 1
+names: ['Fall-Detected']
+
+roboflow:
+  workspace: roboflow-universe-projects
+  project: fall-detection-ca3o8
+  version: 4
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/roboflow-universe-projects/fall-detection-ca3o8/dataset/4

@@ -649,6 +649,67 @@
         </div>
       </div>
 
+      <!-- Fall Detection Section -->
+      <div class="section-divider">
+        <div class="section-title-main fall">
+          <i class="fas fa-person-falling"></i> Fall Detection
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <!-- Fall Image Detection -->
+        <div class="card fall-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-person-falling-burst"></i>
+            </div>
+            <h2 class="card-title">Fall Detection</h2>
+          </div>
+          <form id="fallImageForm" enctype="multipart/form-data">
+            <div class="form-group">
+              <div class="file-input-wrapper">
+                <input type="file" name="image" class="file-input" required accept="image/*">
+                <input type="hidden" name="use_fall" value="true">
+                <div class="file-input-display">
+                  <i class="fas fa-person-falling"></i>
+                  <span>Upload Image for Fall Detection</span>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-fall">
+              <i class="fas fa-person-falling"></i>
+              Detect Fall
+            </button>
+          </form>
+        </div>
+
+        <!-- Fall Video Detection -->
+        <div class="card fall-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-video"></i>
+            </div>
+            <h2 class="card-title">Fall Video Detection</h2>
+          </div>
+          <form id="fallVideoForm">
+            <div class="form-group">
+              <div class="file-input-wrapper">
+                <input type="file" name="video" class="file-input" required accept="video/*">
+                <input type="hidden" name="use_fall" value="true">
+                <div class="file-input-display">
+                  <i class="fas fa-person-falling-burst"></i>
+                  <span>Upload Video for Fall Detection</span>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-fall">
+              <i class="fas fa-person-falling"></i>
+              Detect Falls in Video
+            </button>
+          </form>
+        </div>
+      </div>
+
       <!-- Loading Indicator -->
       <div id="loading" class="loading">
         <div class="spinner"></div>
@@ -861,7 +922,30 @@
       }
     });
 
-    document.getElementById('fireVideoForm').addEventListener('submit', async function(e) {
+    document.getElementById('fallImageForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      showLoading();
+      
+      try {
+        const formData = new FormData(this);
+
+        const response = await fetch('/detect-image', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        showResults(result);
+      } catch (error) {
+        handleError(error.message);
+      }
+    });
+
+    document.getElementById('fallVideoForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       showLoading();
       

@@ -152,6 +152,51 @@ document.getElementById('fireScanForm')?.addEventListener('submit', async functi
   }
 });
 
+// Update the fall detection form handler
+document.getElementById('fallImageForm')?.addEventListener('submit', async function(e) {
+  e.preventDefault(); // Prevent default form submission
+  
+  const formData = new FormData(this);
+  const fileInput = this.querySelector('input[type="file"]');
+  
+  if (!fileInput.files.length) {
+    showNotification('❌ Please select an image file', 'error');
+    return;
+  }
+  
+  showLoading();
+  
+  try {
+    const response = await fetch('/detect-image', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    
+    // Show results
+    hideLoading();
+    showResults(result);
+    
+    // Show notification based on fall detection
+    if (result.fall_detected) {
+      showNotification('🚨 FALL DETECTED! Check results below.', 'danger');
+    } else {
+      showNotification('✅ No fall detected - Area is safe.', 'success');
+    }
+    
+  } catch (error) {
+    hideLoading();
+    showNotification(`❌ Error: ${error.message}`, 'error');
+    console.error('Fall detection error:', error);
+  }
+});
+
 // Add notification styles dynamically
 const notificationStyles = `
 .notification {
