@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fire Detection System</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+    .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+    .section { margin: 30px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; }
+    .fire-section { border-color: #e53e3e; background: #fed7d7; }
+    button { background: #007bff; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+    .fire-button { background: #e53e3e; }
+    .fire-button:hover { background: #c53030; }
+    .results { margin: 20px 0; padding: 20px; border-radius: 8px; }
+    .fire-detected { background: #fed7d7; border: 2px solid #e53e3e; color: #742a2a; }
+    .safe { background: #c6f6d5; border: 2px solid #38a169; color: #22543d; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔥 Fire Detection System</h1>
+    <p>Powered by Roboflow Universe Fire Detection Model</p>
+    
+    <!-- Original Detection -->
+    <div class="section">
+      <h2>📷 General Image Detection</h2>
+      <form id="imageForm">
+        <input type="file" name="image" required>
+        <input type="text" id="filter" name="filter" placeholder="Optional class (e.g., person)">
+        <button type="submit">Detect Objects</button>
+      </form>
+    </div>
+    
+    <!-- Fire Detection -->
+    <div class="section fire-section">
+      <h2>🔥 Fire Detection</h2>
+      <form id="fireImageForm">
+        <input type="file" name="image" required>
+        <input type="hidden" name="use_fire" value="true">
+        <button type="submit" class="fire-button">🔥 Detect Fire</button>
+      </form>
+    </div>
+    
+    <!-- Original Video -->
+    <div class="section">
+      <h2>🎥 General Video Detection</h2>
+      <form id="videoForm">
+        <input type="file" name="video" required>
+        <button type="submit">Detect Objects</button>
+      </form>
+    </div>
+    
+    <!-- Fire Video Detection -->
+    <div class="section fire-section">
+      <h2>🎬 Fire Video Detection</h2>
+      <form id="fireVideoForm">
+        <input type="file" name="video" required>
+        <input type="hidden" name="use_fire" value="true">
+        <button type="submit" class="fire-button">🔥 Detect Fire in Video</button>
+      </form>
+    </div>
+    
+    <!-- Fire Scan -->
+    <div class="section fire-section">
+      <h2>🚨 Emergency Fire Scan</h2>
+      <form id="fireScanForm">
+        <input type="file" name="media" accept="image/*,video/*" required>
+        <button type="submit" class="fire-button">🚨 Emergency Fire Scan</button>
+      </form>
+    </div>
+
+    <div id="results" class="results" style="display:none;">
+      <h3>📊 Results</h3>
+      <pre id="output"></pre>
+    </div>
+  </div>
+
+  <script>
+    function showResults(data) {
+      const resultsDiv = document.getElementById('results');
+      const outputDiv = document.getElementById('output');
+      
+      // Style based on fire detection
+      if (data.fire_threat_level === "FIRE DETECTED") {
+        resultsDiv.className = 'results fire-detected';
+      } else if (data.fire_threat_level === "SAFE") {
+        resultsDiv.className = 'results safe';
+      } else {
+        resultsDiv.className = 'results';
+      }
+      
+      outputDiv.innerText = JSON.stringify(data, null, 2);
+      resultsDiv.style.display = 'block';
+    }
+
+    // Original image detection
+    document.getElementById('imageForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const filter = document.getElementById('filter').value;
+      if (filter) formData.append('filter', filter);
+
+      const response = await fetch('/detect-image', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+      showResults(result);
+    });
+
+    // Fire image detection
+    document.getElementById('fireImageForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      const response = await fetch('/detect-image', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+      showResults(result);
+    });
+
+    // Original video detection
+    document.getElementById('videoForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      const response = await fetch('/detect-video', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+      showResults(result);
+    });
+
+    // Fire video detection
+    document.getElementById('fireVideoForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      const response = await fetch('/detect-video', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+      showResults(result);
+    });
+
+    // Fire scan
+    document.getElementById('fireScanForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      const response = await fetch('/fire-scan', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+      showResults(result);
+    });
+  </script>
+</body>
+</html>
